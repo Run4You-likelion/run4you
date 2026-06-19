@@ -1,10 +1,12 @@
 package com.run4you.asrequest.repository;
 
 import com.run4you.asrequest.entity.AsRequest;
+import com.run4you.equipment.enums.EquipmentCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
@@ -45,4 +47,20 @@ public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
         AND a.status NOT IN ('COMPLETED', 'CANCELLED')
         """)
     boolean existsActiveByEquipmentId(@Param("equipmentId") Long equipmentId);
+
+    // 진단서 및 영수증 목록 조회 (날짜 필터 + 카테고리)
+    @Query("""
+        SELECT a FROM AsRequest a
+        WHERE a.requester.id = :requesterId
+        AND a.status = 'COMPLETED'
+        AND (:startDate IS NULL OR a.requestedAt >= :startDate)
+        AND (:endDate IS NULL OR a.requestedAt <= :endDate)
+        AND (:category IS NULL OR a.equipment.category = :category)
+        ORDER BY a.requestedAt DESC
+        """)
+    List<AsRequest> findReceiptsByRequesterId(
+            @Param("requesterId") Long requesterId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("category") EquipmentCategory category);
 }
