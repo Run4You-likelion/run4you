@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "as_requests")
-public class AsRequest {
+public class AsRequest { // 긴급 A/S 접수 마스터 테이블
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

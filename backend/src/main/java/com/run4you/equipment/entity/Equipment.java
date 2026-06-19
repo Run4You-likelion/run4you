@@ -76,4 +76,9 @@ public class Equipment { // 점포별 도입 기자재 자산 테이블
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    // 기자재 상태 변경 (A/S 접수 시 호출)
+    public void updateStatus(EquipmentStatus status) {
+        this.status = status;
+    }
 }

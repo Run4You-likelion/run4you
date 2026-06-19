@@ -37,4 +37,12 @@ public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
         )
         """)
     List<AsRequest> findLatestErrorCodesByStoreId(@Param("storeId") Long storeId);
+
+    // A/S 접수 현황 - 중복 접수 방지용
+    @Query("""
+        SELECT COUNT(a) > 0 FROM AsRequest a
+        WHERE a.equipment.id = :equipmentId
+        AND a.status NOT IN ('COMPLETED', 'CANCELLED')
+        """)
+    boolean existsActiveByEquipmentId(@Param("equipmentId") Long equipmentId);
 }
