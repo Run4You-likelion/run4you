@@ -33,14 +33,13 @@ public class AsRequestService {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     // 현재 로그인한 점주의 매장 조회
-    private Store getCurrentStore() {
-        User user = getCurrentUser();
+    private Store getCurrentStore(User user) {
         return storeRepository.findByOwnerId(user.getId())
-                .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("매장을 찾을 수 없습니다."));
     }
 
     // A/S 접수 생성
@@ -48,20 +47,23 @@ public class AsRequestService {
 
         // 기자재 존재 여부 확인
         Equipment equipment = equipmentRepository.findById(createDto.getEquipmentId())
-                .orElseThrow(() -> new RuntimeException("기자재를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("기자재를 찾을 수 없습니다."));
 
         // 중복 접수 확인
         boolean hasActiveRequest  = asRequestRepository
                 .existsActiveByEquipmentId(createDto.getEquipmentId());
         if(hasActiveRequest){
-            throw new RuntimeException("이미 진행 중인 접수가 있습니다.");
+            throw new IllegalArgumentException("이미 진행 중인 접수가 있습니다.");
         }
-
-        // 매장 조회
-        Store store = getCurrentStore();
 
         // 점수자 조회
         User requester = getCurrentUser();
+        Store store = getCurrentStore(requester);
+
+        // 기자재가 현재 매장 것인지 확인
+        if (!equipment.getStore().getId().equals(store.getId())) {
+            throw new IllegalStateException("이 기자재에 접근할 수 없습니다.");
+        }
 
         // A/S 접수 생성
         AsRequest asRequest = AsRequest.builder()

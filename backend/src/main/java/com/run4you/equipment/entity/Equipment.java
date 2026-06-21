@@ -51,6 +51,7 @@ public class Equipment { // 점포별 도입 기자재 자산 테이블
     private EquipmentCategory category;
 
     // 기자재 상태 (기본값: 정상)
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private EquipmentStatus status = EquipmentStatus.OPERATIONAL;

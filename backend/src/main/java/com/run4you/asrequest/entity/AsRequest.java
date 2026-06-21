@@ -53,11 +53,13 @@ public class AsRequest { // 긴급 A/S 접수 마스터 테이블
     private String faultCategory;
 
     // 우선순위 (기본값: 일반)
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Priority priority = Priority.NORMAL;
 
     // 접수 상태 (기본값: 접수완료)
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private AsStatus status = AsStatus.RECEIVED;

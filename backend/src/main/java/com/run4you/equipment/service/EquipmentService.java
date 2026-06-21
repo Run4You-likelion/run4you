@@ -43,21 +43,21 @@ public class EquipmentService {
         String email = SecurityContextHolder.getContext()
                 .getAuthentication().getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
     }
 
     // 현재 로그인한 점주의 매장 조회
-    private Store getCurrentStore() {
-        User user = getCurrentUser();
+    private Store getCurrentStore(User user) {
         return storeRepository.findByOwnerId(user.getId())
-                .orElseThrow(() -> new RuntimeException("매장을 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("매장을 찾을 수 없습니다."));
     }
 
     // 1. 기자재 목록 조회 + 카운트
     @Transactional(readOnly = true)
     public EquipmentListResponseDto getEquipmentList(EquipmentSearchDto searchDto){
 
-        Long storeId = getCurrentStore().getId();
+        User user = getCurrentUser();
+        Long storeId = getCurrentStore(user).getId();
         List<Equipment> equipments;
 
         // 카테고리 필터 + 키워드 검색
@@ -116,7 +116,8 @@ public class EquipmentService {
     // 2. 기자재 등록
     public EquipmentResponseDto registerEquipment(EquipmentCreateDto createDto){
 
-        Store store = getCurrentStore();
+        User user = getCurrentUser();
+        Store store = getCurrentStore(user);
 
         Equipment equipment = Equipment.builder()
                 .store(store)
@@ -147,7 +148,14 @@ public class EquipmentService {
     public AsRequestHistoryDto getRepairHistory(Long equipmentId){
 
         Equipment equipment = equipmentRepository.findById(equipmentId)
-                .orElseThrow(() -> new RuntimeException("기자재를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("기자재를 찾을 수 없습니다."));
+
+        User user = getCurrentUser();
+        Store store = getCurrentStore(user);
+
+        if (!equipment.getStore().getId().equals(store.getId())) {
+            throw new IllegalStateException("이 기자재에 접근할 수 없습니다.");
+        }
 
         // 최근 수리일 조회
         LocalDateTime lastRepairAt = assignmentRepository
