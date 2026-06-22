@@ -1,6 +1,6 @@
-package com.run4you.assignment.repository;
+package com.run4you.matching.repository;
 
-import com.run4you.assignment.entity.Assignment;
+import com.run4you.matching.entity.Assignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

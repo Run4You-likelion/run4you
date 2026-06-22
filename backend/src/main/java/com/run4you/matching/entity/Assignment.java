@@ -1,6 +1,5 @@
-package com.run4you.assignment.entity;
+package com.run4you.matching.entity;
 
-import com.run4you.report.entity.RepairReport;
 import com.run4you.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
