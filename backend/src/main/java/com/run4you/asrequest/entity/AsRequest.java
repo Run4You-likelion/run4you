@@ -1,7 +1,5 @@
 package com.run4you.asrequest.entity;
 
-import com.run4you.asrequest.enums.AsStatus;
-import com.run4you.asrequest.enums.Priority;
 import com.run4you.equipment.entity.Equipment;
 import com.run4you.store.entity.Store;
 import com.run4you.user.entity.User;

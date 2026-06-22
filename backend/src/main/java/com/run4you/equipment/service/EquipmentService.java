@@ -7,7 +7,7 @@ import com.run4you.assignment.entity.Assignment;
 import com.run4you.assignment.repository.AssignmentRepository;
 import com.run4you.equipment.dto.*;
 import com.run4you.equipment.entity.Equipment;
-import com.run4you.equipment.enums.EquipmentStatus;
+import com.run4you.equipment.entity.EquipmentStatus;
 import com.run4you.equipment.repository.EquipmentRepository;
 import com.run4you.report.entity.RepairReport;
 import com.run4you.report.repository.RepairReportRepository;

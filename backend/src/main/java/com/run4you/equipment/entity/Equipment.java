@@ -1,7 +1,5 @@
 package com.run4you.equipment.entity;
 
-import com.run4you.equipment.enums.EquipmentCategory;
-import com.run4you.equipment.enums.EquipmentStatus;
 import com.run4you.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,7 +1,10 @@
 package com.run4you.asrequest.repository;
 
+import com.run4you.asrequest.dto.ReceiptListResponseDto;
 import com.run4you.asrequest.entity.AsRequest;
-import com.run4you.equipment.enums.EquipmentCategory;
+import com.run4you.asrequest.entity.AsStatus;
+import com.run4you.dispatch.entity.DispatchStatus;
+import com.run4you.equipment.entity.EquipmentCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,16 +53,34 @@ public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
 
     // 진단서 및 영수증 목록 조회 (날짜 필터 + 카테고리)
     @Query("""
-        SELECT a FROM AsRequest a
+        SELECT new com.run4you.asrequest.dto.ReceiptListResponseDto$ReceiptItemDto(
+            a.id,
+            a.requestedAt,
+            a.status,
+            a.equipment.name,
+            a.equipment.modelName,
+            rr.diagnosis,
+            asn.engineer.name,
+            (SELECT MIN(dsh.changedAt) FROM DispatchStatusHistory dsh
+                WHERE dsh.assignmentId = asn.id
+                AND dsh.status = :repairingStatus),
+            asn.completedAt,
+            rr.totalCost
+        )
+        FROM AsRequest a
+        LEFT JOIN Assignment asn ON asn.asRequestId = a.id
+        LEFT JOIN RepairReport rr ON rr.assignmentId = asn.id
         WHERE a.requester.id = :requesterId
-        AND a.status = 'COMPLETED'
-        AND (:startDate IS NULL OR a.requestedAt >= :startDate)
-        AND (:endDate IS NULL OR a.requestedAt <= :endDate)
-        AND (:category IS NULL OR a.equipment.category = :category)
+          AND a.status = :status
+          AND (:startDate IS NULL OR a.requestedAt >= :startDate)
+          AND (:endDate IS NULL OR a.requestedAt <= :endDate)
+          AND (:category IS NULL OR a.equipment.category = :category)
         ORDER BY a.requestedAt DESC
         """)
-    List<AsRequest> findReceiptsByRequesterId(
+    List<ReceiptListResponseDto.ReceiptItemDto> findReceiptsByRequesterId(
             @Param("requesterId") Long requesterId,
+            @Param("status") AsStatus status,
+            @Param("repairingStatus") DispatchStatus repairingStatus,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("category") EquipmentCategory category);

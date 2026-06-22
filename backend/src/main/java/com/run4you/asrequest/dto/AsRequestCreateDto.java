@@ -1,6 +1,6 @@
 package com.run4you.asrequest.dto;
 
-import com.run4you.asrequest.enums.Priority;
+import com.run4you.asrequest.entity.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

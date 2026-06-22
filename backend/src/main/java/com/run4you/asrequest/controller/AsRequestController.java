@@ -2,13 +2,19 @@ package com.run4you.asrequest.controller;
 
 import com.run4you.asrequest.dto.AsRequestCreateDto;
 import com.run4you.asrequest.dto.AsRequestResponseDto;
+import com.run4you.asrequest.dto.ReceiptListResponseDto;
+import com.run4you.asrequest.dto.ReceiptSearchDto;
 import com.run4you.asrequest.service.AsRequestService;
+import com.run4you.equipment.entity.EquipmentCategory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.run4you.common.response.ApiResponse;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/as-requests")
@@ -27,4 +33,23 @@ public class AsRequestController {
                         asRequestService.createAsRequest(createDto)));
     }
 
+    //  진단서 및 영수증 목록 조회
+    @GetMapping("/receipts")
+    public ResponseEntity<ApiResponse<ReceiptListResponseDto>> getReceipts(
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate startDate,
+
+            @RequestParam(required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate endDate,
+
+            @RequestParam(required = false)EquipmentCategory category
+            ) {
+        ReceiptSearchDto searchDto = ReceiptSearchDto.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .category(category)
+                .build();
+
+        return ResponseEntity.ok(ApiResponse.success(asRequestService.getReceipts(searchDto)));
+    }
 }

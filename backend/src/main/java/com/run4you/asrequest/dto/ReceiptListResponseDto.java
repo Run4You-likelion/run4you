@@ -1,6 +1,6 @@
 package com.run4you.asrequest.dto;
 
-import com.run4you.asrequest.enums.AsStatus;
+import com.run4you.asrequest.entity.AsStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,14 +28,14 @@ public class ReceiptListResponseDto {
     @Builder
     public static class ReceiptItemDto {
         private Long id;
-        private LocalDateTime requestedAt; // 접수일
-        private String equipmentName;
-        private String modelName;
+        private LocalDateTime requestedAt; // 접수 시각
+        private AsStatus status;
+        private String equipmentName; // equipment
+        private String modelName; // equipment
         private String diagnosis; // 고장 원인 - repair_reports
         private String engineerName; // users
         private LocalDateTime startTime; // assignments
         private LocalDateTime endTime; // assignments
-        private AsStatus status;
         private BigDecimal totalCost; // repair_reports
     }
 }

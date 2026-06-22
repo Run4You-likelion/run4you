@@ -1,7 +1,7 @@
 package com.run4you.asrequest.dto;
 
-import com.run4you.asrequest.enums.AsStatus;
-import com.run4you.equipment.enums.EquipmentStatus;
+import com.run4you.asrequest.entity.AsStatus;
+import com.run4you.equipment.entity.EquipmentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package com.run4you.equipment.repository;
 
 import com.run4you.equipment.entity.Equipment;
-import com.run4you.equipment.enums.EquipmentCategory;
-import com.run4you.equipment.enums.EquipmentStatus;
+import com.run4you.equipment.entity.EquipmentCategory;
+import com.run4you.equipment.entity.EquipmentStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

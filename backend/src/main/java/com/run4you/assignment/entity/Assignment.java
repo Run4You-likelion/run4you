@@ -1,5 +1,7 @@
 package com.run4you.assignment.entity;
 
+import com.run4you.report.entity.RepairReport;
+import com.run4you.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import java.time.LocalDateTime;
@@ -16,6 +18,10 @@ public class Assignment { // 테스트용 임시 구현
     // 접수 ID
     @Column(name = "as_request_id", nullable = false)
     private Long asRequestId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "engineer_id")
+    private User engineer;
 
     // 수리 시작 시간
     @Column

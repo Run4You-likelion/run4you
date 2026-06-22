@@ -2,10 +2,14 @@ package com.run4you.asrequest.service;
 
 import com.run4you.asrequest.dto.AsRequestCreateDto;
 import com.run4you.asrequest.dto.AsRequestResponseDto;
+import com.run4you.asrequest.dto.ReceiptListResponseDto;
+import com.run4you.asrequest.dto.ReceiptSearchDto;
 import com.run4you.asrequest.entity.AsRequest;
+import com.run4you.asrequest.entity.AsStatus;
 import com.run4you.asrequest.repository.AsRequestRepository;
+import com.run4you.dispatch.entity.DispatchStatus;
 import com.run4you.equipment.entity.Equipment;
-import com.run4you.equipment.enums.EquipmentStatus;
+import com.run4you.equipment.entity.EquipmentStatus;
 import com.run4you.equipment.repository.EquipmentRepository;
 import com.run4you.store.entity.Store;
 import com.run4you.store.repository.StoreRepository;
@@ -17,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -90,4 +96,37 @@ public class AsRequestService {
                 .equipmentName(equipment.getName())
                 .build();
     }
+
+    // 진단서 및 영수증 목록 조회
+    @Transactional(readOnly = true)
+    public ReceiptListResponseDto getReceipts(ReceiptSearchDto searchDto){
+
+        // 현재 로그인한 점주
+        User requester = getCurrentUser();
+
+        // LocalDate -> LocalDateTime 변환
+        LocalDateTime startDateTime = (searchDto.getStartDate() != null)
+                ? searchDto.getStartDate().atStartOfDay()
+                : null;
+
+        LocalDateTime endDateTime = (searchDto.getEndDate() != null)
+                ? searchDto.getEndDate().atTime(LocalTime.MAX)
+                : null;
+
+        // 조회
+        List<ReceiptListResponseDto.ReceiptItemDto> items =
+                asRequestRepository.findReceiptsByRequesterId(
+                        requester.getId(),
+                        AsStatus.COMPLETED,
+                        DispatchStatus.REPAIRING,
+                        startDateTime,
+                        endDateTime,
+                        searchDto.getCategory()
+                );
+
+        return ReceiptListResponseDto.builder()
+                .receipts(items)
+                .build();
+    }
+
 }

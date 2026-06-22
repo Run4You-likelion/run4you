@@ -1,6 +1,6 @@
 package com.run4you.equipment.dto;
 
-import com.run4you.equipment.enums.EquipmentCategory;
+import com.run4you.equipment.entity.EquipmentCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

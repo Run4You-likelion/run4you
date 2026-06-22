@@ -1,4 +1,4 @@
-package com.run4you.asrequest.enums;
+package com.run4you.asrequest.entity;
 
 // 접수 상태
 public enum AsStatus {
