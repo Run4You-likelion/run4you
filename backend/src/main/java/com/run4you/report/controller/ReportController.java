@@ -29,7 +29,7 @@ public class ReportController {
     public ResponseEntity<ApiResponse<ReportResponse>> create(@Valid @RequestBody ReportCreateRequest request) {
         ReportResponse response = reportService.createReport(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "정비 리포트가 작성되었습니다.", response));
+                .body(ApiResponse.of(response, "정비 리포트가 작성되었습니다."));
     }
 
     @GetMapping

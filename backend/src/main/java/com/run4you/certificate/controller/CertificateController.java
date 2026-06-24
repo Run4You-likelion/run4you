@@ -31,7 +31,7 @@ public class CertificateController {
             @Valid @RequestBody CertificateIssueRequest request) {
         CertificateResponse res = certificateService.issue(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "진단서가 발급되었습니다.", res));
+                .body(ApiResponse.of(res, "진단서가 발급되었습니다."));
     }
 
     @GetMapping

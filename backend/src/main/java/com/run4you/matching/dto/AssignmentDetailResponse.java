@@ -30,7 +30,7 @@ public class AssignmentDetailResponse {
     private String equipmentName;
     private String serialNumber;
     private String purchasedDate;       // purchasedAt (구매일)
-    private String lastRepairedDate;    // Equipment에 없어서 "-" 고정, 추후 Assignment 이력에서 조회
+    private String lastRepairedDate;
     private String equipmentCategory;
 
     // ─── 가중치 배정 점수 ────────────────────────────────────────

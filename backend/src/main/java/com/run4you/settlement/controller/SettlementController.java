@@ -41,7 +41,7 @@ public class SettlementController {
             @Valid @RequestBody SettlementGenerateRequest request) {
         SettlementResponse res = settlementService.generate(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "정산이 생성되었습니다.", res));
+                .body(ApiResponse.of(res, "정산이 생성되었습니다."));
     }
 
     // 승인자(approverId)는 통합 시 로그인 사용자에서 주입. 로컬에서는 쿼리 파라미터로 전달.
@@ -49,13 +49,13 @@ public class SettlementController {
     public ResponseEntity<ApiResponse<SettlementResponse>> approve(
             @PathVariable Long id,
             @RequestParam(required = false) Long approverId) {
-        return ResponseEntity.ok(ApiResponse.success("승인 완료", settlementService.approve(id, approverId)));
+        return ResponseEntity.ok(ApiResponse.success(settlementService.approve(id, approverId), "승인 완료"));
     }
 
     @PatchMapping("/{id}/reject")
     public ResponseEntity<ApiResponse<SettlementResponse>> reject(
             @PathVariable Long id,
             @RequestParam(required = false) Long approverId) {
-        return ResponseEntity.ok(ApiResponse.success("반려 완료", settlementService.reject(id, approverId)));
+        return ResponseEntity.ok(ApiResponse.success(settlementService.reject(id, approverId), "반려 완료"));
     }
 }
