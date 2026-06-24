@@ -26,8 +26,7 @@ public class AsRequestController {
             @RequestBody @Valid AsRequestCreateDto createDto){
 
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "success",
-                        asRequestService.createAsRequest(createDto)));
+                .body(ApiResponse.of(asRequestService.createAsRequest(createDto), "success"));
     }
 
     //  진단서 및 영수증 목록 조회

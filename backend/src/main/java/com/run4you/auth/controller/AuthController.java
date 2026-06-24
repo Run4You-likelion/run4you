@@ -21,13 +21,14 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse<Void>> signup(@Valid @RequestBody SignupRequest request) {
         authService.signup(request);
-        return ResponseEntity.ok(ApiResponse.of(200, "회원가입이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.", null));
+        return ResponseEntity.ok(ApiResponse.success(null, "회원가입이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.")
+        );
     }
 
     @PostMapping("/signup/brand")
     public ResponseEntity<ApiResponse<Void>> signupBrand(@Valid @RequestBody BrandSignupRequest request) {
         authService.signupBrand(request);
-        return ResponseEntity.ok(ApiResponse.of(200, "브랜드 가입 신청이 완료되었습니다. 관리자 승인 후 로그인 가능합니다.", null));
+        return ResponseEntity.ok(ApiResponse.success(null, "브랜드 가입 신청이 완료되었습니다. 관리자 승인 후 로그인 가능합니다."));
     }
 
     @PostMapping("/login")

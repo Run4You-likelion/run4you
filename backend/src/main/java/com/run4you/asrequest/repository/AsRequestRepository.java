@@ -14,6 +14,17 @@ import java.util.List;
 
 public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
 
+    // 수락 가능한 AS 요청 전체 조회 (매칭 대기열용)
+    // Store, Equipment 조인 페치로 N+1 방지
+    @Query("""
+            SELECT ar FROM AsRequest ar
+            JOIN FETCH ar.store s
+            JOIN FETCH ar.equipment e
+            WHERE ar.status = 'RECEIVED'
+            ORDER BY ar.priority DESC, ar.requestedAt ASC
+            """)
+    List<AsRequest> findAllReceived();
+
     // 수리 이력 조회 모달 - 기자재별 수리 이력 전체 조회 (최신순, 완료된 것만)
     @Query("""
             SELECT a FROM AsRequest a
