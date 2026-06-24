@@ -56,7 +56,7 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
             onClick={onClose}
         >
             <div
-                className="rounded-2xl w-full max-w-3xl flex flex-col"
+                className="rounded-2xl w-full max-w-2xl flex flex-col"
                 style={{ background: "#fff", boxShadow: "0 20px 50px rgba(0,0,0,0.25)", maxHeight: "85vh" }}
                 onClick={(e) => e.stopPropagation()}
             >
@@ -79,32 +79,44 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                 {!loading && !error && data && (
                     <>
                         {/* 상단 기자재 정보 */}
-                        <div className="px-8 pb-5" style={{ borderBottom: "1px solid rgba(15,23,42,0.08)" }}>
-                            <div className="flex items-start gap-4">
-                                <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#F1F5F9" }}>
-                                    <span style={{ color: "#475569" }}>{catIcons[category]}</span>
-                                </div>
-                                <div className="flex-1 grid grid-cols-3 gap-x-6 gap-y-3">
+                        <div className="px-8 pb-5">
+                            <div className="flex items-stretch gap-8">
+                                {/* 아이콘 + 이름 */}
+                                <div className="flex items-start gap-4 shrink-0">
+                                    <div className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0" style={{ background: "#F1F5F9" }}>
+                                        <span style={{ color: "#475569" }}>{catIcons[category]}</span>
+                                    </div>
                                     <div>
-                                        <div style={{ fontSize: 17, fontWeight: 700, color: "#0F172A" }}>{data.name}</div>
-                                        <div style={{ fontSize: 13, color: "#64748B", marginBottom: 6 }}>{data.modelName}</div>
+                                        <div style={{ fontSize: 18, fontWeight: 700, color: "#0F172A" }}>{data.name}</div>
+                                        <div style={{ fontSize: 14, color: "#64748B", marginBottom: 8 }}>{data.modelName}</div>
                                         <StatusBadge status={data.status} size="sm" />
                                     </div>
-                                    <div className="flex flex-col gap-2">
+                                </div>
+
+                                {/* 구분선 1 */}
+                                <div style={{ width: 1, background: "rgba(15,23,42,0.1)", alignSelf: "stretch", marginLeft: 24 }} />
+
+                                {/* 정보 2칸 */}
+                                <div className="flex justify-center" style={{ gap: 40, marginLeft: 12 }}>
+                                    <div className="flex flex-col gap-2.5 justify-center">
                                         <InfoRow label="시리얼 번호" value={data.serialNo} mono />
-                                        <InfoRow label="구매일" value={fmtDate(data.purchasedAt)} />
                                         <InfoRow label="위치" value={data.storeName} />
                                     </div>
-                                    <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col gap-2.5 justify-center">
+                                        <InfoRow label="구매일" value={fmtDate(data.purchasedAt)} />
                                         <InfoRow label="최근 수리일" value={fmtDate(data.lastRepairAt)} />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <div className="px-6">
+                            <div style={{ height: 1, background: "rgba(15,23,42,0.08)" }} />
+                        </div>
+
                         {/* 수리 이력 목록 */}
                         <div className="px-8 py-5 overflow-y-auto flex-1">
-                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}>
+                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0F172A", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid rgba(15,23,42,0.08)" }}>
                                 수리 이력 <span style={{ color: "#94A3B8", fontWeight: 500 }}>({data.repairHistoryItems.length}건)</span>
                             </h3>
 
@@ -134,23 +146,25 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                                                 {/* 내용 */}
                                                 <div className="flex-1 pb-6">
                                                     <div className="flex items-start justify-between gap-4">
-                                                        <div className="flex-1">
+                                                        <div style={{ minWidth: 0, flex: 1 }}>
                                                             <div style={{ fontSize: 13, color: "#64748B", marginBottom: 4 }}>{fmtDate(item.completedAt)}</div>
                                                             {item.errorCode && (
                                                                 <div style={{ fontSize: 13, fontWeight: 600, color: "#DC2626", marginBottom: 2 }}>에러코드: {item.errorCode}</div>
                                                             )}
                                                             <div style={{ fontSize: 15, fontWeight: 600, color: "#0F172A" }}>{item.symptom ?? "-"}</div>
                                                         </div>
-                                                        <div style={{ textAlign: "right" }}>
-                                                            <div style={{ fontSize: 12, color: "#94A3B8" }}>수리 비용</div>
-                                                            <div style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>{fmtCost(item.totalCost)}</div>
+                                                        <div className="flex items-center gap-3 shrink-0">
+                                                            <div style={{ textAlign: "right" }}>
+                                                                <div style={{ fontSize: 12, color: "#94A3B8" }}>수리 비용</div>
+                                                                <div style={{ fontSize: 15, fontWeight: 700, color: "#0F172A" }}>{fmtCost(item.totalCost)}</div>
+                                                            </div>
+                                                            <span className="px-2.5 py-1 rounded-md" style={{ fontSize: 12, fontWeight: 600, background: "#DCFCE7", color: "#16A34A" }}>
+                                                                {asStatusLabel[item.status] ?? item.status}
+                                                            </span>
+                                                            <button onClick={() => setExpanded(isOpen ? null : idx)} className="mt-0.5">
+                                                                <ChevronDown size={18} style={{ color: "#94A3B8", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+                                                            </button>
                                                         </div>
-                                                        <span className="px-2.5 py-1 rounded-md shrink-0" style={{ fontSize: 12, fontWeight: 600, background: "#DCFCE7", color: "#16A34A" }}>
-                              {asStatusLabel[item.status] ?? item.status}
-                            </span>
-                                                        <button onClick={() => setExpanded(isOpen ? null : idx)} className="shrink-0 mt-0.5">
-                                                            <ChevronDown size={18} style={{ color: "#94A3B8", transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
-                                                        </button>
                                                     </div>
 
                                                     {/* 펼침: 정비 의견 + 상세보기 */}
@@ -202,9 +216,9 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
 
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
     return (
-        <div className="flex justify-between gap-3">
-            <span style={{ fontSize: 13, color: "#94A3B8" }}>{label}</span>
-            <span style={{ fontSize: 13, color: "#334155", fontWeight: 500, fontFamily: mono ? "var(--font-mono)" : "inherit" }}>{value}</span>
+        <div className="flex items-center gap-3">
+            <span style={{ fontSize: 14, color: "#94A3B8", minWidth: 68 }}>{label}</span>
+            <span style={{ fontSize: 14, color: "#1E293B", fontWeight: 600, fontFamily: mono ? "var(--font-mono)" : "inherit" }}>{value}</span>
         </div>
     );
 }

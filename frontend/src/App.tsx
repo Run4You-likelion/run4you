@@ -10,6 +10,7 @@ import type { UserRole, Screen } from "./components/layout/Sidebar";
 import { Header } from "./components/layout/Header";
 import { ToastNotification } from "./components/common/ToastNotification";
 import { StoreHome } from "./pages/store/StoreHome";
+import { StoreReceipt } from "./pages/store/StoreReceipt";
 
 const screenLabels: Record<string, string> = {
   "store-home": "기자재 현황",
@@ -58,6 +59,7 @@ function Dashboard() {
           {screen === "super-brands" && <SuperAdminBrandsPage />}
           {screen === "super-users" && <SuperAdminUsersPage />}
           {screen === "store-home" && <StoreHome onRequestAS={() => setScreen("store-as-form")} />}
+          {screen === "store-receipt" && <StoreReceipt />}
         </div>
       </main>
       <ToastNotification />
