@@ -57,6 +57,7 @@ export interface RepairHistoryItem {
     status: 'RECEIVED' | 'MATCHING' | 'ASSIGNED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
     diagnosis: string | null;
     repairReportId: number | null;
+    asRequestId: number | null;
 }
 
 // 이력 모달 전체 (AsRequestHistoryDto)

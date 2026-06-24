@@ -75,8 +75,8 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
                     {/* 기자재 등록 버튼 */}
                     <button
                         onClick={() => setShowForm(true)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:opacity-90"
-                        style={{ background: "#2563EB", color: "#fff", fontSize: 14, fontWeight: 600, boxShadow: "0 1px 2px rgba(37,99,235,0.3)" }}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all hover:opacity-90"
+                        style={{ background: "#2563EB", color: "#fff", fontSize: 15, fontWeight: 600, boxShadow: "0 1px 2px rgba(37,99,235,0.3)" }}
                     >
                         <Plus size={15} />
                         기자재 등록
@@ -84,8 +84,8 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
                     {/* 긴급 A/S 접수 버튼 */}
                     <button
                         onClick={onRequestAS}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:opacity-90"
-                        style={{ background: "#DC2626", color: "#fff", fontSize: 14, fontWeight: 600, boxShadow: "0 1px 2px rgba(220,38,38,0.3)" }}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-lg transition-all hover:opacity-90"
+                        style={{ background: "#DC2626", color: "#fff", fontSize: 15, fontWeight: 600, boxShadow: "0 1px 2px rgba(220,38,38,0.3)" }}
                     >
                         <Plus size={15} />
                         긴급 A/S 접수

@@ -4,6 +4,7 @@ import { StatusBadge } from "../../components/common/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
 import { getRepairHistory } from "../../api/equipment";
 import type { RepairHistory } from "../../api/equipment";
+import { ReceiptDetailModal } from "./ReceiptDetailModal";
 
 const catIcons: Record<string, React.ReactNode> = {
     KIOSK: <Monitor size={22} />,
@@ -32,6 +33,7 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [expanded, setExpanded] = useState<number | null>(null);
+    const [receiptId, setReceiptId] = useState<number | null>(null);
 
     useEffect(() => {
         if (!accessToken) return;
@@ -42,11 +44,10 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
             .finally(() => setLoading(false));
     }, [accessToken, equipmentId]);
 
-    // 상세보기 → 진단서/영수증 이동 (자리만, 진단서 화면 만들 때 연결)
-    const handleViewReport = (repairReportId: number | null) => {
-        if (!repairReportId) return;
-        console.log("진단서/영수증으로 이동:", repairReportId);
-        // TODO: 진단서 화면(StoreReceipt) 만든 후 연결
+    // 영수증 상세 모달 열기
+    const handleViewReport = (asRequestId: number | null) => {
+        if (!asRequestId) return;
+        setReceiptId(asRequestId);
     };
 
     return (
@@ -94,10 +95,10 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                                 </div>
 
                                 {/* 구분선 1 */}
-                                <div style={{ width: 1, background: "rgba(15,23,42,0.1)", alignSelf: "stretch", marginLeft: 24 }} />
+                                <div style={{ width: 1, background: "rgba(15,23,42,0.1)", alignSelf: "stretch", marginLeft: 12 }} />
 
                                 {/* 정보 2칸 */}
-                                <div className="flex justify-center" style={{ gap: 40, marginLeft: 12 }}>
+                                <div className="flex justify-center" style={{ gap: 28 }}>
                                     <div className="flex flex-col gap-2.5 justify-center">
                                         <InfoRow label="시리얼 번호" value={data.serialNo} mono />
                                         <InfoRow label="위치" value={data.storeName} />
@@ -110,13 +111,14 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                             </div>
                         </div>
 
+                        {/* 여백 있는 구분선 */}
                         <div className="px-6">
                             <div style={{ height: 1, background: "rgba(15,23,42,0.08)" }} />
                         </div>
 
                         {/* 수리 이력 목록 */}
                         <div className="px-8 py-5 overflow-y-auto flex-1">
-                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0F172A", marginBottom: 16, paddingBottom: 12, borderBottom: "1px solid rgba(15,23,42,0.08)" }}>
+                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#0F172A", marginBottom: 16 }}>
                                 수리 이력 <span style={{ color: "#94A3B8", fontWeight: 500 }}>({data.repairHistoryItems.length}건)</span>
                             </h3>
 
@@ -144,7 +146,7 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                                                 </div>
 
                                                 {/* 내용 */}
-                                                <div className="flex-1 pb-6">
+                                                <div className="flex-1 pb-6" style={{ borderBottom: isLast ? "none" : "1px solid rgba(15,23,42,0.06)" }}>
                                                     <div className="flex items-start justify-between gap-4">
                                                         <div style={{ minWidth: 0, flex: 1 }}>
                                                             <div style={{ fontSize: 13, color: "#64748B", marginBottom: 4 }}>{fmtDate(item.completedAt)}</div>
@@ -167,7 +169,7 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                                                         </div>
                                                     </div>
 
-                                                    {/* 펼침: 정비 의견 + 상세보기 */}
+                                                    {/* 펼침: 정비 의견 + 영수증 보기 */}
                                                     {isOpen && (
                                                         <div className="mt-2 px-4 py-3 rounded-lg" style={{ background: "#F8FAFC" }}>
                                                             <div className="flex items-start justify-between gap-3">
@@ -175,9 +177,9 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                                                                     <div style={{ fontSize: 12, color: "#94A3B8", marginBottom: 4 }}>정비 의견</div>
                                                                     <div style={{ fontSize: 14, color: "#334155" }}>{item.diagnosis ?? "정비 의견이 없습니다."}</div>
                                                                 </div>
-                                                                {item.repairReportId && (
+                                                                {item.asRequestId && (
                                                                     <button
-                                                                        onClick={() => handleViewReport(item.repairReportId)}
+                                                                        onClick={() => handleViewReport(item.asRequestId)}
                                                                         className="shrink-0 transition-all hover:opacity-70"
                                                                         style={{ background: "transparent", color: "#2563EB", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap" }}
                                                                     >
@@ -210,6 +212,11 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
                     </>
                 )}
             </div>
+
+            {/* 영수증 상세 모달 (이력 모달 위에) */}
+            {receiptId != null && (
+                <ReceiptDetailModal asRequestId={receiptId} onClose={() => setReceiptId(null)} />
+            )}
         </div>
     );
 }
@@ -217,8 +224,8 @@ export function RepairHistoryModal({ equipmentId, category, onClose }: Props) {
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
     return (
         <div className="flex items-center gap-3">
-            <span style={{ fontSize: 14, color: "#94A3B8", minWidth: 68 }}>{label}</span>
-            <span style={{ fontSize: 14, color: "#1E293B", fontWeight: 600, fontFamily: mono ? "var(--font-mono)" : "inherit" }}>{value}</span>
+            <span style={{ fontSize: 14, color: "#94A3B8", minWidth: 68, whiteSpace: "nowrap" }}>{label}</span>
+            <span style={{ fontSize: 14, color: "#1E293B", fontWeight: 600, fontFamily: mono ? "var(--font-mono)" : "inherit", whiteSpace: "nowrap" }}>{value}</span>
         </div>
     );
 }

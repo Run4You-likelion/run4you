@@ -207,6 +207,7 @@ public class EquipmentService {
                             .status(a.getStatus())
                             .diagnosis(report != null ? report.getDiagnosis() : null)
                             .repairReportId(report != null ? report.getId() : null)
+                            .asRequestId(a.getId())
                             .build();
                 }).toList();
 

@@ -4,6 +4,7 @@ import { StatusBadge } from "../../components/common/StatusBadge";
 import { useAuth } from "../../context/AuthContext";
 import { getReceipts } from "../../api/receipt";
 import type { ReceiptItem } from "../../api/receipt";
+import { ReceiptDetailModal } from "./ReceiptDetailModal";
 
 const fmtReceiptNo = (id: number, requestedAt: string) => {
     const year = requestedAt ? new Date(requestedAt).getFullYear() : new Date().getFullYear();
@@ -49,6 +50,7 @@ export function StoreReceipt() {
     const [error, setError] = useState("");
     const [year, setYear] = useState("");
     const [search, setSearch] = useState("");
+    const [detailId, setDetailId] = useState<number | null>(null);
 
     useEffect(() => {
         if (!accessToken) return;
@@ -210,7 +212,7 @@ export function StoreReceipt() {
                                 gap: 16,
                                 borderBottom: "1px solid rgba(15,23,42,0.05)",
                             }}
-                            onClick={() => console.log("상세 보기:", r.id)}
+                            onClick={() => setDetailId(r.id)}
                         >
                             <div
                                 style={{
@@ -320,6 +322,12 @@ export function StoreReceipt() {
                     ))}
                 </div>
             )}
+
+            {/* 상세 모달 */}
+            {detailId != null && (
+                <ReceiptDetailModal asRequestId={detailId} onClose={() => setDetailId(null)} />
+            )}
+
         </div>
     );
 }

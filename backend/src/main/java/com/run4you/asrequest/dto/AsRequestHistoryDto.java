@@ -42,6 +42,7 @@ public class AsRequestHistoryDto {
         private AsStatus status;
         private String diagnosis; // 정비 의견
         private Long repairReportId; // 진단서/영수증 연결용 ID
+        private Long asRequestId;
     }
 
     // 수리 이력 전체 목록

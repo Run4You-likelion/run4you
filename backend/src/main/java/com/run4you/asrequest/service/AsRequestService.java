@@ -223,7 +223,6 @@ public class AsRequestService {
                     .toList();
         }
 
-        // 7. 조립
         return ReceiptDetailResponseDto.builder()
                 .asRequestId(asRequest.getId())
                 .invoiceNumber(invoiceNumber)
