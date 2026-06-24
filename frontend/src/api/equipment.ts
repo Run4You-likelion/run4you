@@ -6,8 +6,6 @@ function authHeader(token: string) {
     return { Authorization: `Bearer ${token}` };
 }
 
-// ─── 타입 정의 (백엔드 DTO와 매칭) ───────────────────────
-
 // 기자재 카드 1개 (EquipmentResponseDto)
 export interface Equipment {
     id: number;
@@ -46,8 +44,6 @@ export interface EquipmentSearchParams {
     keyword?: string;
 }
 
-// ─── 이력 보기 모달 (AsRequestHistoryDto) ──────────────
-
 // 수리 이력 1건 (RepairHistoryItem)
 export interface RepairHistoryItem {
     completedAt: string | null;
@@ -78,8 +74,6 @@ export interface RepairHistory {
     totalRepairCount: number;
     totalRepairCost: number | null;
 }
-
-// ─── API 함수 ────────────────────────────────────────
 
 // 1. 기자재 목록 조회 (GET /api/equipment)
 export async function getEquipmentList(
