@@ -75,4 +75,23 @@ public class AsRequest { // 긴급 A/S 접수 마스터 테이블
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    // ─── 비즈니스 메서드 ─────────────────────────────────────────
+
+    /** 엔지니어 배정 확정 — 상태를 RECEIVED → ASSIGNED로 변경 */
+    public void assignEngineer() {
+        if (this.status != AsStatus.RECEIVED) {
+            throw new IllegalStateException(
+                    "배정 가능한 상태가 아닙니다. 현재 상태: " + this.status);
+        }
+        this.status = AsStatus.ASSIGNED;
+    }
+
+    /** 접수 취소 */
+    public void cancel() {
+        if (this.status == AsStatus.COMPLETED) {
+            throw new IllegalStateException("완료된 접수는 취소할 수 없습니다.");
+        }
+        this.status = AsStatus.CANCELLED;
+    }
 }

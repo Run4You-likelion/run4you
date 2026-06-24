@@ -32,8 +32,7 @@ public class EquipmentController {
     public ResponseEntity<ApiResponse<EquipmentResponseDto>> registerEquipment(
             @RequestBody @Valid EquipmentCreateDto createDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.of(201, "success",
-                        equipmentService.registerEquipment(createDto)));
+                .body(ApiResponse.of(equipmentService.registerEquipment(createDto), "success"));
     }
 
     // 3. 이력보기 모달
