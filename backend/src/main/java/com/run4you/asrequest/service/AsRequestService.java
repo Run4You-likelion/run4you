@@ -70,6 +70,11 @@ public class AsRequestService {
         Equipment equipment = equipmentRepository.findById(createDto.getEquipmentId())
                 .orElseThrow(() -> new IllegalArgumentException("기자재를 찾을 수 없습니다."));
 
+        // 정상 상태인 기자재만 접수 가능
+        if (equipment.getStatus() != EquipmentStatus.OPERATIONAL) {
+            throw new IllegalStateException("정상 상태의 기자재만 A/S 접수가 가능합니다.");
+        }
+
         // 중복 접수 확인
         boolean hasActiveRequest  = asRequestRepository
                 .existsActiveByEquipmentId(createDto.getEquipmentId());
@@ -109,6 +114,37 @@ public class AsRequestService {
                 .requestedAt(saved.getRequestedAt())
                 .equipmentId(equipment.getId())
                 .equipmentName(equipment.getName())
+                .build();
+    }
+
+    // 고장 기자재의 진행 중인 A/S 접수 상세 조회
+    @Transactional(readOnly = true)
+    public AsRequestResponseDto getActiveAsRequestByEquipment(Long equipmentId) {
+
+        // 본인 매장 기자재인지 확인
+        User requester = getCurrentUser();
+        Store store = getCurrentStore(requester);
+
+        Equipment equipment = equipmentRepository.findById(equipmentId)
+                .orElseThrow(() -> new IllegalArgumentException("기자재를 찾을 수 없습니다."));
+
+        if (!equipment.getStore().getId().equals(store.getId())) {
+            throw new IllegalStateException("이 기자재에 접근할 수 없습니다.");
+        }
+
+        // 진행 중인 접수 조회 (완료/취소가 아닌 가장 최근 건)
+        AsRequest asRequest = asRequestRepository.findActiveByEquipmentId(equipmentId)
+                .orElseThrow(() -> new IllegalArgumentException("진행 중인 접수가 없습니다."));
+
+        return AsRequestResponseDto.builder()
+                .id(asRequest.getId())
+                .priority(asRequest.getPriority())
+                .status(asRequest.getStatus())
+                .requestedAt(asRequest.getRequestedAt())
+                .equipmentId(equipment.getId())
+                .equipmentName(equipment.getName())
+                .errorCode(asRequest.getErrorCode())
+                .symptom(asRequest.getSymptom())
                 .build();
     }
 

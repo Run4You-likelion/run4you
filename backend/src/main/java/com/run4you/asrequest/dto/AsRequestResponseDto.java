@@ -23,4 +23,6 @@ public class AsRequestResponseDto {
     private LocalDateTime requestedAt;
     private Long equipmentId;        // AsRequest.equipment.id
     private String equipmentName;    // AsRequest.equipment.name
+    private String errorCode;
+    private String symptom;
 }

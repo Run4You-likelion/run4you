@@ -6,6 +6,7 @@ import { getEquipmentList } from "../../api/equipment";
 import type { Equipment, EquipmentListResponse } from "../../api/equipment";
 import { EquipmentForm } from "./EquipmentForm";
 import { RepairHistoryModal } from "./RepairHistoryModal";
+import { AsRequestDetailModal } from "./AsRequestDetailModal";
 
 const catIcons: Record<string, React.ReactNode> = {
     KIOSK: <Monitor size={18} />,
@@ -26,9 +27,11 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [cat, setCat] = useState<Category>("ALL");
+    const [statusFilter, setStatusFilter] = useState<"ALL" | "OPERATIONAL" | "FAULTY" | "REPAIRING">("ALL");
     const [search, setSearch] = useState("");
     const [showForm, setShowForm] = useState(false);
     const [historyTarget, setHistoryTarget] = useState<Equipment | null>(null);
+    const [asDetailTarget, setAsDetailTarget] = useState<Equipment | null>(null);
     const [reload, setReload] = useState(0);
 
     // 백엔드에서 전체 목록 한 번 불러오기 (필터는 프론트에서)
@@ -49,16 +52,17 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
 
     const allEquipments: Equipment[] = data?.equipments ?? [];
 
-    // 프론트에서 카테고리 + 검색 필터링 (즉각 반응)
+    // 프론트에서 카테고리 + 검색 필터링
     const filtered = allEquipments.filter((eq) => {
         const matchCat = cat === "ALL" || eq.category === cat;
+        const matchStatus = statusFilter === "ALL" || eq.status === statusFilter;
         const keyword = search.trim().toLowerCase();
         const matchSearch =
             keyword === "" ||
             eq.name.toLowerCase().includes(keyword) ||
             eq.modelName.toLowerCase().includes(keyword) ||
             eq.serialNo.toLowerCase().includes(keyword);
-        return matchCat && matchSearch;
+        return matchCat && matchStatus && matchSearch;
     });
 
     return (
@@ -96,12 +100,22 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
             {/* Summary strip */}
             <div className="grid grid-cols-4 gap-5">
                 {[
-                    { label: "전체", value: data?.totalCount ?? 0, icon: <CheckCircle size={20} />, color: "#2563EB" },
-                    { label: "정상 가동", value: data?.operationalCount ?? 0, icon: <CheckCircle size={20} />, color: "#16A34A" },
-                    { label: "고장", value: data?.faultyCount ?? 0, icon: <AlertCircle size={20} />, color: "#DC2626" },
-                    { label: "수리 중", value: data?.repairingCount ?? 0, icon: <Clock size={20} />, color: "#D97706" },
+                    { label: "전체", value: data?.totalCount ?? 0, icon: <CheckCircle size={20} />, color: "#2563EB", status: "ALL" as const },
+                    { label: "정상 가동", value: data?.operationalCount ?? 0, icon: <CheckCircle size={20} />, color: "#16A34A", status: "OPERATIONAL" as const },
+                    { label: "고장", value: data?.faultyCount ?? 0, icon: <AlertCircle size={20} />, color: "#DC2626", status: "FAULTY" as const },
+                    { label: "수리 중", value: data?.repairingCount ?? 0, icon: <Clock size={20} />, color: "#D97706", status: "REPAIRING" as const },
                 ].map((s) => (
-                    <div key={s.label} className="rounded-xl p-5 flex items-center gap-3.5" style={{ background: "#fff", border: "1px solid rgba(15,23,42,0.08)", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                    <button
+                        key={s.label}
+                        onClick={() => setStatusFilter(s.status)}
+                        className="rounded-xl p-5 flex items-center gap-3.5 transition-all text-left"
+                        style={{
+                            background: "#fff",
+                            border: statusFilter === s.status ? "3px solid #CBD5E1" : "3px solid rgba(15,23,42,0.06)",
+                            boxShadow: statusFilter === s.status ? "0 2px 8px rgba(15,23,42,0.08)" : "0 1px 3px rgba(0,0,0,0.04)",
+                            cursor: "pointer",
+                        }}
+                    >
                         <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${s.color}1F` }}>
                             <span style={{ color: s.color }}>{s.icon}</span>
                         </div>
@@ -109,7 +123,7 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
                             <div style={{ fontSize: 26, fontWeight: 700, color: "#0F172A", letterSpacing: "-0.02em" }}>{s.value}</div>
                             <div style={{ fontSize: 14, color: "#475569", fontWeight: 600 }}>{s.label}</div>
                         </div>
-                    </div>
+                    </button>
                 ))}
             </div>
 
@@ -214,11 +228,11 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
                                 </button>
                                 {eq.status !== "OPERATIONAL" && (
                                     <button
-                                        onClick={onRequestAS}
+                                        onClick={() => setAsDetailTarget(eq)}
                                         className="flex-1 py-2 rounded-lg text-center transition-all"
                                         style={{ fontSize: 14, fontWeight: 600, background: "#FEF2F2", color: "#DC2626" }}
                                     >
-                                        A/S 접수
+                                        접수 내용
                                     </button>
                                 )}
                             </div>
@@ -241,6 +255,15 @@ export function StoreHome({ onRequestAS }: { onRequestAS: () => void }) {
                     equipmentId={historyTarget.id}
                     category={historyTarget.category}
                     onClose={() => setHistoryTarget(null)}
+                />
+            )}
+
+            {/* A/S 접수 내용 모달 */}
+            {asDetailTarget && (
+                <AsRequestDetailModal
+                    equipmentId={asDetailTarget.id}
+                    equipmentName={asDetailTarget.name}
+                    onClose={() => setAsDetailTarget(null)}
                 />
             )}
         </div>
