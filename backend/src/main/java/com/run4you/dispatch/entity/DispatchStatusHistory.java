@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.run4you.dispatch.entity;
 
 import com.run4you.dispatch.domain.DispatchStatus;
@@ -64,4 +63,3 @@ public class DispatchStatusHistory {
         this.changedAt = changedAt != null ? changedAt : LocalDateTime.now();
     }
 }
-
