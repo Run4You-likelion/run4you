@@ -13,6 +13,8 @@ import { StoreHome } from "./pages/store/StoreHome";
 import { StoreReceipt } from "./pages/store/StoreReceipt";
 import { StoreASForm } from "./pages/store/StoreASForm";
 import { StoreDispatch } from "./pages/store/StoreDispatch";
+import { EngQueue } from "./components/engineer/EngQueue";
+import { EngDetail } from "./components/engineer/EngDetail";
 import { EngStatus } from "./pages/engineer/EngStatus";
 import BrandAdminUsersPage from "./pages/BrandAdminUsersPage";
 
@@ -45,38 +47,79 @@ function Dashboard() {
   const { user, signOut } = useAuth();
   const role = (user?.role ?? "STORE_OWNER") as UserRole;
   const [screen, setScreen] = useState<Screen>(defaultScreen[role]);
+  const [selectedAsRequestId, setSelectedAsRequestId] = useState<number | null>(null);
+  const [acceptedAssignmentId, setAcceptedAssignmentId] = useState<number | null>(null);
+
+  const handleScreenChange = (s: Screen) => {
+    if (s === "eng-queue") setSelectedAsRequestId(null);
+    setScreen(s);
+  };
 
   return (
-    <div
-      className="flex h-screen overflow-hidden"
-      style={{ background: "var(--background)", fontFamily: "var(--font-sans)" }}
-    >
-      <Sidebar
-        role={role}
-        screen={screen}
-        onScreenChange={setScreen}
-        onRoleChange={() => {}}
-        notifications={3}
-        userName={user?.name ?? ''}
-        onLogout={signOut}
-      />
-      <main className="flex-1 overflow-y-auto">
-        <Header screenLabel={screenLabels[screen] ?? screen} currentTime="2026-06-15 14:32" />
-        <div className="px-8 py-6">
-          {screen === "super-brands" && <SuperAdminBrandsPage />}
-          {screen === "super-users" && <SuperAdminUsersPage />}
-          {screen === "store-home" && <StoreHome onRequestAS={() => setScreen("store-as-form")} />}
-          {screen === "store-as-form" && <StoreASForm onComplete={() => setScreen("store-home")} />}
-          {screen === "store-receipt" && <StoreReceipt />}
-          {screen === "admin-users" && <BrandAdminUsersPage />}
-          {screen === "store-dispatch" && <StoreDispatch assignmentId={1} />}
-          {screen === "eng-status" && (
-              <EngStatus assignmentId={1} onComplete={() => setScreen("eng-queue")} />
-          )}
-        </div>
-      </main>
-      <ToastNotification />
-    </div>
+      <div
+          className="flex h-screen overflow-hidden"
+          style={{ background: "var(--background)", fontFamily: "var(--font-sans)" }}
+      >
+        <Sidebar
+            role={role}
+            screen={screen}
+            onScreenChange={handleScreenChange}
+            onRoleChange={() => {}}
+            notifications={3}
+            userName={user?.name ?? ''}
+            onLogout={signOut}
+        />
+        <main className="flex-1 overflow-y-auto">
+          <Header screenLabel={screenLabels[screen] ?? screen} currentTime="2026-06-15 14:32" />
+          <div className="px-8 py-6">
+
+            {/* ── 점주 ── */}
+            {screen === "store-home" && <StoreHome onRequestAS={() => setScreen("store-as-form")} />}
+            {screen === "store-as-form" && <StoreASForm onComplete={() => setScreen("store-home")} />}
+            {screen === "store-receipt" && <StoreReceipt />}
+            {screen === "store-dispatch" && <StoreDispatch assignmentId={1} />}
+
+            {/* ── 엔지니어 ── */}
+            {screen === "eng-queue" && (
+                <EngQueue
+                    onSelect={(asRequestId) => {
+                      setSelectedAsRequestId(asRequestId);
+                      setScreen("eng-detail");
+                    }}
+                />
+            )}
+            {screen === "eng-detail" && selectedAsRequestId && (
+                <EngDetail
+                    asRequestId={selectedAsRequestId}
+                    onBack={() => {
+                      setSelectedAsRequestId(null);
+                      setScreen("eng-queue");
+                    }}
+                    onAccepted={(assignmentId) => {
+                      setAcceptedAssignmentId(assignmentId);
+                      setSelectedAsRequestId(null);
+                      setScreen("eng-status");
+                    }}
+                />
+            )}
+            {screen === "eng-status" && (
+                <EngStatus
+                    assignmentId={acceptedAssignmentId ?? 1}
+                    onComplete={() => setScreen("eng-queue")}
+                />
+            )}
+
+            {/* ── 본사 관리자 ── */}
+            {screen === "admin-users" && <BrandAdminUsersPage />}
+
+            {/* ── 플랫폼 총괄 ── */}
+            {screen === "super-brands" && <SuperAdminBrandsPage />}
+            {screen === "super-users" && <SuperAdminUsersPage />}
+
+          </div>
+        </main>
+        <ToastNotification />
+      </div>
   );
 }
 
@@ -87,13 +130,13 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </AuthProvider>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
   );
 }
