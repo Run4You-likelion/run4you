@@ -12,6 +12,8 @@ import { ToastNotification } from "./components/common/ToastNotification";
 import { StoreHome } from "./pages/store/StoreHome";
 import { StoreReceipt } from "./pages/store/StoreReceipt";
 import { StoreASForm } from "./pages/store/StoreASForm";
+import { StoreDispatch } from "./pages/store/StoreDispatch";
+import { EngStatus } from "./pages/engineer/EngStatus";
 
 const screenLabels: Record<string, string> = {
   "store-home": "기자재 현황",
@@ -64,6 +66,10 @@ function Dashboard() {
           {screen === "store-home" && <StoreHome onRequestAS={() => setScreen("store-as-form")} />}
           {screen === "store-as-form" && <StoreASForm onComplete={() => setScreen("store-home")} />}
           {screen === "store-receipt" && <StoreReceipt />}
+          {screen === "store-dispatch" && <StoreDispatch assignmentId={1} />}
+          {screen === "eng-status" && (
+              <EngStatus assignmentId={1} onComplete={() => setScreen("eng-queue")} />
+          )}
         </div>
       </main>
       <ToastNotification />
