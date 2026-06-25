@@ -29,6 +29,15 @@ public class AsRequestController {
                 .body(ApiResponse.of(asRequestService.createAsRequest(createDto), "success"));
     }
 
+    // 고장 기자재의 진행 중인 A/S 접수 상세 조회
+    @GetMapping("/by-equipment/{equipmentId}")
+    public ResponseEntity<ApiResponse<AsRequestResponseDto>> getActiveAsRequestByEquipment(
+            @PathVariable Long equipmentId) {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(asRequestService.getActiveAsRequestByEquipment(equipmentId)));
+    }
+
     //  진단서 및 영수증 목록 조회
     @GetMapping("/receipts")
     public ResponseEntity<ApiResponse<ReceiptListResponseDto>> getReceipts(

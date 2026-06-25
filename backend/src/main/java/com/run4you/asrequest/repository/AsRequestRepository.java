@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
 
@@ -95,4 +96,14 @@ public interface AsRequestRepository extends JpaRepository<AsRequest, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("category") EquipmentCategory category);
+
+    // 기자재 ID로 진행 중인 접수 1건 조회 (고장 기자재의 접수 내용 보기용)
+    @Query("""
+        SELECT a FROM AsRequest a
+        WHERE a.equipment.id = :equipmentId
+        AND a.status NOT IN ('COMPLETED', 'CANCELLED')
+        ORDER BY a.requestedAt DESC
+        LIMIT 1
+        """)
+    Optional<AsRequest> findActiveByEquipmentId(@Param("equipmentId") Long equipmentId);
 }
