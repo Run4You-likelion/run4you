@@ -42,6 +42,10 @@ export async function updateCommissionRate(token: string, id: number, commission
   return res.data.data;
 }
 
+export async function deleteBrand(token: string, id: number): Promise<void> {
+  await api.delete(`/brands/${id}`, { headers: authHeader(token) });
+}
+
 export async function getUsers(token: string): Promise<User[]> {
   const res = await api.get('/users', { headers: authHeader(token) });
   return res.data.data;
@@ -70,4 +74,8 @@ export async function deactivateUser(token: string, id: number): Promise<User> {
 export async function activateUser(token: string, id: number): Promise<User> {
   const res = await api.patch(`/users/${id}/activate`, {}, { headers: authHeader(token) });
   return res.data.data;
+}
+
+export async function deleteUser(token: string, id: number): Promise<void> {
+  await api.delete(`/users/${id}`, { headers: authHeader(token) });
 }

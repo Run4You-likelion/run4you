@@ -97,8 +97,9 @@ public class UserService {
         if (target.getStatus() != UserStatus.PENDING) {
             throw new IllegalStateException("승인 대기 중인 사용자가 아닙니다.");
         }
-        target.reject();
-        return new UserResponse(target);
+        UserResponse response = new UserResponse(target);
+        userRepository.delete(target);
+        return response;
     }
 
     @Transactional
@@ -119,6 +120,15 @@ public class UserService {
         }
         target.activate();
         return new UserResponse(target);
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        User target = findUser(id);
+        if (target.getRole() == Role.SUPER_ADMIN) {
+            throw new IllegalStateException("플랫폼 총괄 계정은 삭제할 수 없습니다.");
+        }
+        userRepository.delete(target);
     }
 
     private void validateAuthority(User requester, User target) {
