@@ -22,6 +22,7 @@ import { AdminBilling } from "./components/admin/AdminBilling";
 import { AdminStats } from "./components/admin/AdminStats";
 import { SuperDashboard } from "./components/super/SuperDashboard";
 import { SettingsPage } from "./pages/SettingsPage";
+import SuperAdminLmsPage from "./pages/SuperAdminLmsPage";
 
 const screenLabels: Record<string, string> = {
   "store-home": "기자재 현황",
@@ -39,6 +40,7 @@ const screenLabels: Record<string, string> = {
   "super-dashboard": "전체 통계 대시보드",
   "super-brands": "브랜드 관리",
   "super-users": "회원 관리",
+  "super-lms": "교육 콘텐츠 관리",
   "settings": "설정",
 };
 
@@ -146,6 +148,7 @@ function Dashboard() {
             {screen === "super-dashboard" && <SuperDashboard />}
             {screen === "super-brands" && <SuperAdminBrandsPage />}
             {screen === "super-users" && <SuperAdminUsersPage />}
+            {screen === "super-lms" && <SuperAdminLmsPage />}
 
           </div>
         </main>
