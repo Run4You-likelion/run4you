@@ -28,11 +28,9 @@ function getCoords(): Promise<{ latitude: number; longitude: number } | null> {
 // assignmentId: 수락(accept) 응답으로 받은 배정 ID. 상위(배정 상세)에서 내려준다.
 export function EngStatus({
                               assignmentId,
-                              autoStart = true,
                               onComplete,
                           }: {
     assignmentId: number;
-    autoStart?: boolean;
     onComplete: () => void;
 }) {
     const { accessToken } = useAuth();
@@ -40,15 +38,13 @@ export function EngStatus({
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState("");
     const [times, setTimes] = useState<Record<number, string>>({}); // stage → changedAt(HH:mm)
-    const startedRef = useRef(false);
 
     const record = (k: number, iso: string) => {
         const d = new Date(iso);
         setTimes((t) => ({ ...t, [k]: `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` }));
     };
 
-    // 진입 시 자동으로 DISPATCHED(출동 시작) 전이 — 수락 직후 화면이므로.
-    // 별도 "출동 시작" 버튼으로 바꾸려면 autoStart=false 로 주고 이 effect 대신 버튼에서 send(0) 호출.
+    // DISPATCHED(출동 중) 단계에서만 위치 추적 — 매장 도착 전까지 10초 스로틀로 좌표 전송.
     const lastPingRef = useRef(0);
     useEffect(() => {
         if (!accessToken || stage !== 0 || !navigator.geolocation) return;

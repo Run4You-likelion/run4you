@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Clock, Phone, Star, Navigation, Zap } from "lucide-react";
+import { Clock, Phone, Navigation, Zap } from "lucide-react";
 import { Stepper } from "../../components/common/Stepper";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -8,7 +8,7 @@ import {
     type DispatchStatus,
     type TimelineItem,
 } from "../../api/dispatch";
-import { getAssignmentEngineer, type AssignmentEngineer } from "../../api/dispatch";
+
 
 // 상태 → Stepper current 인덱스 (COMPLETED 는 4로 두어 4단계 모두 done 처리)
 const STATUS_STEP: Record<string, number> = {
@@ -257,7 +257,7 @@ export function StoreDispatch({
                             fill="none" stroke="#2563EB" strokeWidth={3} strokeDasharray="6,3" opacity={0.6}
                         />
                         <MapDot x={STORE.x} y={STORE.y} label="내 매장" color="#DC2626" />
-                        <MapDot x={engineerPos.x} y={engineerPos.y} label={engineerName} color="#2563EB" pulse />
+                        <MapDot x={engineerPos.x} y={engineerPos.y} label={engineerName ?? "엔지니어"} color="#2563EB" pulse />
                     </svg>
 
                     {/* ETA overlay */}
