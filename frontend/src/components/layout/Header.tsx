@@ -1,9 +1,24 @@
-interface HeaderProps {
-    screenLabel: string;
-    currentTime?: string;
+import { useState, useEffect } from 'react';
+
+function useCurrentTime() {
+    const [time, setTime] = useState(() =>
+        new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+    );
+    useEffect(() => {
+        const id = setInterval(() => {
+            setTime(new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }));
+        }, 60000);
+        return () => clearInterval(id);
+    }, []);
+    return time;
 }
 
-export function Header({ screenLabel, currentTime = "" }: HeaderProps) {
+interface HeaderProps {
+    screenLabel: string;
+}
+
+export function Header({ screenLabel }: HeaderProps) {
+    const currentTime = useCurrentTime();
     return (
         <div
             className="sticky top-0 z-10 flex items-center justify-between px-8 py-5"

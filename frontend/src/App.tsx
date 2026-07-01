@@ -77,7 +77,7 @@ function Dashboard() {
             onLogout={signOut}
         />
         <main className="flex-1 overflow-y-auto">
-          <Header screenLabel={screenLabels[screen] ?? screen} currentTime={new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })} />
+          <Header screenLabel={screenLabels[screen] ?? screen} />
           <div className="px-8 py-6">
 
             {/* ── 점주 ── */}
