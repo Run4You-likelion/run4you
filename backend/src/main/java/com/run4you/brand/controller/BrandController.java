@@ -43,6 +43,13 @@ public class BrandController {
         return ResponseEntity.ok(ApiResponse.success(brandService.reject(id)));
     }
 
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        brandService.deleteBrand(id);
+        return ResponseEntity.ok(ApiResponse.success(null));
+    }
+
     @PatchMapping("/{id}/commission-rate")
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<BrandResponse>> updateCommissionRate(
